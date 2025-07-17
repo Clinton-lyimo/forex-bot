@@ -15,8 +15,8 @@ def generate_signals(file_name):
         file_path = os.path.join(PROCESSED_PATH, file_name)
         df = pd.read_csv(file_path, index_col=0, parse_dates=True)
 
-        if df.empty or df.isnull().values.any():
-            raise ValueError(f"Data in {file_name} is incomplete or contains NaNs.")
+        if df.empty or df.iloc[-1].isnull().any():
+            raise ValueError(f"Data in {file_name} is incomplete or contains NaNs in the latest row.")
 
         latest = df.iloc[-1]
 
