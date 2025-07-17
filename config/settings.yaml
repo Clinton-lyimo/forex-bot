@@ -1,0 +1,13 @@
+api:
+  provider: "AlphaVantage"
+  key: "WA50HDYCGWBHGCJ6"  # Replace with your real API key
+
+trading:
+  pairs: ["EUR/USD", "GBP/USD"]
+  timeframe: "60min"                # Used in Alpha Vantage (valid: 1min, 5min, 15min, 30min, 60min)
+  risk_per_trade: 0.01
+
+paths:
+  raw_data: "data/raw/"
+  processed_data: "data/processed/"
+  signals: "signals/latest_signals.json"

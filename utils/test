@@ -1,0 +1,64 @@
+# import requests
+# import yaml
+# import os
+# import pandas as pd
+
+# # Load Config
+# with open("config/settings.yaml","r") as f:
+#     config = yaml.safe_load(f)
+
+# API_KEY = config["api"]["key"]
+# PAIRS = config["trading"]["pairs"]
+# RAW_PATH = config["paths"]["raw_data"]
+
+# def fetch_forex_data(pair):
+#     url = (f"https://www.alphavintage.co"
+#            f"function=FX_INTRADAY&from_symbol={from_symbol}&to_symbol={to_symbol}"
+#            f"&interval=60min&apikey={API_KEY}&outputsize=compact")
+
+#     try:
+#         response = requests.get(url,timeout=10)
+#         if response.status_code == 200:
+#             data = response.json()
+#             print(data)
+#             if "Time Series FX (60min)" in data:
+#                 df = pd.DataFrame.from_dict(data["Time Series FX (60min)"],orient="index")
+#                 df = df.rename(columns={
+#                     "1. open": "open",
+#                     "2. high": "high",
+#                     "3. low": "low",
+#                     "4. close": "close"
+#                 })
+#                 df.index = pd.to_datetime(df.index)
+#                 df = df.sort_index()
+#                 os.makedirs(RAW_PATH,exist_ok=True)
+#                 filename = f"{from_symbol}_{to_symbol}.csv"
+#                 df.to_csv(os.path.join(RAW_PATH,filename))
+#                 print(f"Saved {pair} data to {filename}")
+#             else:
+#                 print(f"No data returned for {pair}. Check API limits or symbol format.")
+#         else:
+#             print(f"Failed to fetch data for {pair}: HTTP {response.status_code}")
+#     except requests.exceptions.RequestException as e:
+#         print(f"Error Fetching data for {pair} : {e}")
+
+# def fetch_all();
+#     for pair in PAIRS:
+#         fetch_forex_data(pair)
+
+#     print(response)
+#     if response.status_code == 200:
+#         data = response.json()
+#         df = pd.DataFrame(data["prices"])
+#         os.makedirs(RAW_PATH,exist_ok=True)
+#         df.to_csv(os.path.join(RAW_PATH,f"{pair.replace('/','')}.csv"),index=False)
+#         print(f"saved {pair} data")
+#     else:
+#         print(f"Failed to fetch data for {pair}: {response.status_code}")
+
+# def fetch_all():
+#     for pair in PAIRS:
+#         fetch_forex_data(pair)
+
+# if __name__ == "__main__":
+#     fetch_all()
