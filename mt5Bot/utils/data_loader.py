@@ -28,25 +28,34 @@ def fetch_mt5_data(pair):
         print(f"❌ Failed to initialize MT5 for {pair}")
         return
 
-    timeframe = TIMEFRAME_MAP.get(TIMEFRAME, mt5.TIMEFRAME_H1)
-    bars = mt5.copy_rates_from_pos(pair, timeframe, 0, BAR_COUNT)
+    try:
+        symbol = pair.replace("/", "")
+        if not mt5.symbol_select(symbol, True):
+            print(f"⚠️ Failed to select symbol {symbol}. It might not be available in your broker.")
+            return
 
-    if bars is None or len(bars) == 0:
-        print(f"⚠️ No data returned for {pair}")
+        timeframe = TIMEFRAME_MAP.get(TIMEFRAME.upper(), mt5.TIMEFRAME_H1)
+        bars = mt5.copy_rates_from_pos(symbol, timeframe, 0, BAR_COUNT)
+
+        if bars is None or len(bars) == 0:
+            print(f"⚠️ No data returned for {pair}")
+            return
+
+        df = pd.DataFrame(bars)
+        df['time'] = pd.to_datetime(df['time'], unit='s')
+        df.set_index('time', inplace=True)
+        df = df[['open', 'high', 'low', 'close']]
+
+        os.makedirs(RAW_PATH, exist_ok=True)
+        file_path = os.path.join(RAW_PATH, f"{symbol}.csv")
+        df.to_csv(file_path)
+        print(f"✅ Saved {pair} data to {file_path}")
+
+    except Exception as e:
+        print(f"❌ Error fetching data for {pair}: {e}")
+
+    finally:
         mt5.shutdown()
-        return
-
-    df = pd.DataFrame(bars)
-    df['time'] = pd.to_datetime(df['time'], unit='s')
-    df.set_index('time', inplace=True)
-    df = df[['open', 'high', 'low', 'close']]
-
-    os.makedirs(RAW_PATH, exist_ok=True)
-    file_path = os.path.join(RAW_PATH, f"{pair.replace('/', '_')}.csv")
-    df.to_csv(file_path)
-    print(f"✅ Saved {pair} data to {file_path}")
-
-    mt5.shutdown()
 
 def fetch_all():
     for pair in PAIRS:
